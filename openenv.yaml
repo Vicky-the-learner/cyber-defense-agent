@@ -1,0 +1,29 @@
+name: cyber-defense-agent
+description: AI-powered cyber defense environment that detects and responds to attacks
+version: 1.0
+
+endpoints:
+  reset: /reset
+  step: /step
+  state: /state
+  tasks: /tasks
+  grader: /grader
+  baseline: /baseline
+
+observation_space:
+  type: object
+  properties:
+    input:
+      type: string
+    analysis:
+      type: object
+
+action_space:
+  type: object
+  properties:
+    action:
+      type: string
+
+reward:
+  type: float
+  range: [0.0, 1.0]
