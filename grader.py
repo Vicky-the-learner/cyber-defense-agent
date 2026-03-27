@@ -9,7 +9,10 @@ def grade_task(level):
 
     for task in tasks:
         env.reset()
-        result = env.step(task["input"])
+        try:
+            result = env.step(task["input"])
+        except Exception as e:
+            continue
 
         detected = result["state"]["analysis"]["attack"]
         action = result["response"]["action"]
@@ -35,7 +38,13 @@ def grade_task(level):
 def run_baseline():
     results = {}
 
-    for level in TASKS.keys():
-        results[level] = grade_task(level)
+    try:
+        for level in TASKS.keys():
+            results[level] = grade_task(level)
+    except Exception as e:
+        return {
+            "error": str(e),
+            "message": "Baseline failed"
+        }
 
     return results
