@@ -7,6 +7,8 @@ colorTo: purple
 sdk: docker
 license: mit
 short_description: "AI-powered cyber attack detection and response environment using OpenEnv"
+---------------------------------------------------------------------------------------------
+
 # 🛡️ AI Cyber Defense Agent (OpenEnv)
 
 ## 🚀 Overview
@@ -41,6 +43,8 @@ It is built as an **OpenEnv-compatible reinforcement learning environment**.
 * +confidence-based scoring
 * penalties for wrong actions
 
+---
+
 ## 🧪 Tasks
 
 | Level  | Description        |
@@ -49,12 +53,17 @@ It is built as an **OpenEnv-compatible reinforcement learning environment**.
 | Medium | Obfuscated attacks |
 | Hard   | Advanced payloads  |
 
+---
+
 ## 📊 Performance (Baseline)
 
-
+```
 easy:   0.98
 medium: 0.98
 hard:   0.98
+```
+
+---
 
 ## 🔌 API Endpoints
 
@@ -64,6 +73,8 @@ hard:   0.98
 * `/tasks` → list tasks
 * `/grader/{level}` → evaluate level
 * `/baseline` → run full evaluation
+
+---
 
 ## ⚙️ Setup
 
