@@ -7,7 +7,7 @@ endpoints:
   step: /step
   state: /state
   tasks: /tasks
-  grader: /grader
+  grader: /grader/{level}
   baseline: /baseline
 
 observation_space:
@@ -17,13 +17,41 @@ observation_space:
       type: string
     analysis:
       type: object
+      properties:
+        attack:
+          type: string
+        severity:
+          type: string
+        confidence:
+          type: number
+        explanation:
+          type: string
 
 action_space:
   type: object
   properties:
     action:
       type: string
+      enum:
+        - BLOCK_IP
+        - SANITIZE_INPUT
+        - ALLOW
 
 reward:
   type: float
   range: [0.0, 1.0]
+
+done:
+  type: boolean
+  description: Indicates whether the episode is complete
+
+tasks:
+  levels:
+    - easy
+    - medium
+    - hard
+
+metadata:
+  author: OpenEnv Hackathon
+  domain: cybersecurity
+  difficulty: multi-level
