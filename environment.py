@@ -28,7 +28,12 @@ class CyberDefenseEnv:
         response = respond_to_attack(analysis)
 
         # Reward
-        reward = calculate_reward(analysis, response)
+        reward = calculate_reward(
+            detected_attack=analysis["attack"],
+            expected_attack=expected_attack,
+            action=response["action"],
+            confidence=analysis.get("confidence", 0)
+        )
 
         # Save state
         self.last_analysis = analysis

@@ -1,20 +1,23 @@
-def calculate_reward(analysis, response):
-    attack = analysis.get("attack")
-    action = response.get("action")
+# reward.py
 
-    # Perfect actions
-    if attack == "SQL Injection" and action == "BLOCK_IP":
-        return 1.0
+def calculate_reward(detected_attack, expected_attack, action, confidence):
+    reward = 0.0
 
-    if attack == "XSS" and action == "SANITIZE_INPUT":
-        return 1.0
+    # 🔥 Detection correctness (major)
+    if detected_attack == expected_attack:
+        reward += 0.5
+    else:
+        reward -= 0.3  # penalty
 
-    if attack == "Normal" and action == "ALLOW":
-        return 1.0
+    # 🔥 Action correctness
+    if (expected_attack == "SQL Injection" and action == "BLOCK_IP") or \
+       (expected_attack == "XSS" and action == "SANITIZE_INPUT"):
+        reward += 0.3
+    else:
+        reward -= 0.2
 
-    # Partial correct
-    if attack != "Normal" and action != "ALLOW":
-        return 0.5
+    # 🔥 Confidence contribution
+    reward += min(confidence, 1.0) * 0.2
 
-    # Wrong action
-    return 0.0
+    # Clamp between 0 and 1
+    return round(max(0.0, min(1.0, reward)), 2)
