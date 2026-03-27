@@ -7,7 +7,6 @@ colorTo: purple
 sdk: docker
 license: mit
 short_description: "AI-powered cyber attack detection and response environment using OpenEnv"
----------------------------------------------------------------------------------------------
 
 # 🛡️ AI Cyber Defense Agent (OpenEnv)
 
