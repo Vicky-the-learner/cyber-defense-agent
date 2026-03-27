@@ -19,7 +19,16 @@ class InputData(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Cyber Defense Agent Running 🚀"}
+    return {
+        "message": "Cyber Defense Agent is running",
+        "endpoints": [
+            "/reset",
+            "/step",
+            "/tasks",
+            "/grader/{level}",
+            "/baseline"
+        ]
+    }
 
 @app.post("/analyze")
 async def analyze(data: InputData):
