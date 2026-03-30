@@ -1,0 +1,8 @@
+[project]
+name = "cyber-defense-agent"
+version = "0.1.0"
+description = "AI Cyber Defense Agent OpenEnv environment"
+authors = ["Vicky"]
+
+[tool.openenv]
+entrypoint = "app:app"
