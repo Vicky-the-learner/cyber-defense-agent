@@ -48,7 +48,7 @@ async def analyze(data: InputData):
         "response": response,
         "reward": reward
     }
-@app.post("/reset")
+@app.api_route("/reset", methods=["GET", "POST"])
 def reset_env():
     return env.reset()
 
