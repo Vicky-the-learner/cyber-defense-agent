@@ -3,6 +3,15 @@ name = "cyber-defense-agent"
 version = "0.1.0"
 description = "AI Cyber Defense Agent OpenEnv environment"
 authors = ["Vicky"]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "openenv-core>=0.2.0"
+]
+
+[project.scripts]
+server = "app:app"
 
 [tool.openenv]
 entrypoint = "app:app"
