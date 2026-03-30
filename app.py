@@ -12,7 +12,7 @@ from grader import run_baseline
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from ai_agent import analyze_input
+
 
 app = FastAPI()
 
@@ -59,23 +59,18 @@ def reset_env():
 def step(data: dict):
     user_input = data.get("input", "")
 
-    try:
-        result = analyze_input(user_input)
+    attack = "none"
+    action = "allow"
 
-        if not isinstance(result, dict):
-            raise Exception("Invalid AI output")
-
-        attack = result.get("attack", "none")
-        action = result.get("action", "allow")
-
-    except:
-        # fallback (IMPORTANT for reliability)
-        attack = "none"
-        action = "allow"
-
-        if "OR 1=1" in user_input:
-            attack = "SQL Injection"
-            action = "block"
+    if "OR 1=1" in user_input:
+        attack = "SQL Injection"
+        action = "block"
+    elif "<script>" in user_input:
+        attack = "XSS"
+        action = "block"
+    elif "UNION SELECT" in user_input:
+        attack = "Advanced SQL Injection"
+        action = "block"
 
     return {
         "attack": attack,
@@ -142,3 +137,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)
