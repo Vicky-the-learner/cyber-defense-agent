@@ -8,11 +8,13 @@ class CyberDefenseEnv:
         self.current_input = None
         self.last_analysis = None
         self.done = False
+        self.history = []
 
     def reset(self):
         self.current_input = None
         self.last_analysis = None
         self.done = False
+        self.history = []
 
         return {
             "state": "Environment reset"
@@ -24,25 +26,39 @@ class CyberDefenseEnv:
         # Detection
         analysis = detect_attack(input_data)
 
+        # Ensure AI-like fields exist
+        attack = analysis.get("attack", "none")
+        confidence = analysis.get("confidence", 0.5)
+        reason = analysis.get("reason", "No clear pattern")
+
         # Response
         response = respond_to_attack(analysis)
+        action = response.get("action", "allow")
 
-        # Reward
+        # Reward (fixed)
         reward = calculate_reward(
-            detected_attack=analysis["attack"],
-            expected_attack=expected_attack,
-            action=response["action"],
-            confidence=analysis.get("confidence", 0)
+            attack=attack,
+            action=action,
+            confidence=confidence
         )
 
         # Save state
         self.last_analysis = analysis
         self.done = True
 
+        # 🔥 NEW: Store history (Day 2 upgrade)
+        self.history.append({
+            "input": input_data,
+            "attack": attack,
+            "action": action,
+            "confidence": confidence
+        })
+
         return {
             "state": {
                 "input": input_data,
-                "analysis": analysis
+                "analysis": analysis,
+                "history": self.history[-5:]  # last 5 actions
             },
             "response": response,
             "reward": reward,
@@ -53,5 +69,6 @@ class CyberDefenseEnv:
         return {
             "current_input": self.current_input,
             "last_analysis": self.last_analysis,
+            "history": self.history,
             "done": self.done
         }

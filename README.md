@@ -6,58 +6,122 @@ app_file: app.py
 # 🛡️ AI Cyber Defense Agent (OpenEnv)
 
 ## 🚀 Overview
+The AI Cyber Defense Agent is a **real-world simulation environment** built using the OpenEnv framework.  
+It enables AI systems to detect, analyze, and respond to cyber attacks in a controlled environment.
 
-AI Cyber Defense Agent is an OpenEnv-based environment that simulates real-world cyber attacks and allows an AI agent to detect and respond to them.
+This project focuses on simulating real-world threats such as:
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- Command Injection
+- Path Traversal
+- Brute Force Attacks
 
-This project demonstrates how an AI system can:
-- Detect malicious inputs (SQL Injection, etc.)
-- Classify attack types
-- Take automated defensive actions (block, allow, alert)
-
----
-
-## 🎯 Objective
-
-To build a realistic environment where an AI agent can:
-- Observe incoming requests/logs
-- Identify potential cyber threats
-- Take appropriate defensive actions
-- Be evaluated using a scoring system
+Agents interact using standardized APIs (`step`, `reset`, `state`) and learn optimal defense strategies through reward-based feedback.
 
 ---
 
-## 🧠 How It Works
+## 🎯 Problem Statement
+Modern web applications are constantly exposed to automated and evolving cyber threats.
 
-1. User provides an input (simulated request/log)
-2. Environment processes the input
-3. AI agent detects whether it's an attack
-4. Agent decides an action
-5. System returns structured output + score
+Traditional security systems:
+- Rely on static rules
+- Fail against obfuscated or unknown attacks
+- Cannot adapt dynamically
 
----
-
-## 🏗️ OpenEnv Architecture
-
-### Core Endpoints
-
-- `/reset` → Reset environment state  
-- `/step` → Process input and return AI decision  
-- `/tasks` → List available tasks (easy, medium, hard)  
-- `/grader/{level}` → Evaluate performance  
-- `/baseline` → Run baseline agent and return scores  
+There is a need for **intelligent, adaptive cybersecurity systems** capable of learning from interactions.
 
 ---
 
-## 📊 Tasks
+## 💡 Proposed Solution
+This project introduces a **simulation-based AI cyber defense environment** where:
 
-| Level   | Description |
-|--------|------------|
-| Easy   | Simple attack detection (e.g., SQL Injection) |
-| Medium | Multi-pattern detection |
-| Hard   | More realistic and complex inputs |
+- Attack inputs are generated
+- The system detects malicious behavior
+- Appropriate defensive actions are taken
+- Rewards guide the learning process
+
+This allows training and evaluation of **AI-driven intrusion detection and response systems**.
 
 ---
 
-## 🧪 Example
+## 🏗️ System Architecture
+User Input → Detection Engine → Response Module → Reward Function → Agent Learning
 
-### Input:
+---
+
+## ⚙️ Core Features
+- 🔍 Multi-vector attack detection (SQLi, XSS, Command Injection, Path Traversal, Brute Force)
+- 🤖 AI-ready environment (extendable with LLMs or ML models)
+- ⚡ Real-time response mechanism (block / allow decisions)
+- 🎯 Reward-driven evaluation system
+- 🧪 Multi-level tasks (Easy / Medium / Hard)
+- 📊 Built-in baseline scoring
+- 🌐 Fully deployed and accessible via Hugging Face Spaces
+
+---
+
+## 📡 API Endpoints
+
+/reset   -> Reset environment  
+/step    -> Process input and return action  
+/state   -> Retrieve environment state  
+/tasks   -> List available tasks  
+/grader/{level} -> Evaluate agent performance  
+/baseline -> Run baseline evaluation  
+
+---
+
+## 🧪 Example Interaction
+
+Input:
+' OR 1=1 --
+
+Output:
+{
+  "attack": "SQL Injection",
+  "action": "block"
+}
+
+---
+
+## 🏆 Task Levels
+
+Easy   -> Basic attack patterns  
+Medium -> Encoded and script-based attacks  
+Hard   -> Complex multi-step and advanced injections  
+
+---
+
+## 📊 Reward Strategy
++1    -> Correct detection and response  
+-1    -> Incorrect or missed action  
++0.5  -> Partial detection  
+
+---
+
+## 🌍 Real-World Applications
+- Web Application Firewalls (WAF)
+- API Security Gateways
+- Intrusion Detection Systems (IDS)
+- Automated Cyber Defense Platforms
+- AI Security Training Environments
+
+---
+
+## 🚀 Deployment
+Live Application:
+https://kiko555-cyber-defense-agent.hf.space
+
+---
+
+## 🧠 Future Scope
+- Integration with deep learning-based detection models  
+- Real-time traffic monitoring  
+- Adaptive threat intelligence systems  
+- Self-learning defense mechanisms  
+- Integration with SIEM tools  
+
+---
+
+## 👨‍💻 Author
+Vicky-the-learner
