@@ -1,7 +1,8 @@
-from tasks import TASKS
 from environment import CyberDefenseEnv
-print("Grader Loaded")
+from tasks import TASKS
+
 env = CyberDefenseEnv()
+
 
 def grade_task(level):
     tasks = TASKS[level]
@@ -9,42 +10,56 @@ def grade_task(level):
 
     for task in tasks:
         env.reset()
-        try:
-            result = env.step(task["input"])
-        except Exception as e:
-            continue
 
-        detected = result["state"]["analysis"]["attack"]
-        action = result["response"]["action"]
-        confidence = result["state"]["analysis"].get("confidence", 0)
+        # 🔥 Inject structured attack into environment
+        env.current_input = {
+            "type": "test",
+            "payload": task["input"],
+            "severity": 0.7
+        }
 
-        score = 0
+        result = env.step()
 
-        # Detection score
-        if detected == task["expected_attack"]:
+        analysis = result["info"]["analysis"]
+        response = result["info"]["response"]
+
+        detected_attack = analysis.get("attack", "Normal")
+        expected_attack = task["expected_attack"]
+
+        blocked = response.get("blocked", False)
+        confidence = analysis.get("confidence", 0.5)
+
+        score = 0.0
+        reasons = []
+
+        # ---------------- DETECTION ----------------
+        if detected_attack == expected_attack:
             score += 0.4
+            reasons.append("✔ Correct detection")
+        else:
+            reasons.append("❌ Wrong detection")
 
-        # Action score
-        if (detected == "SQL Injection" and action == "BLOCK_IP") or \
-           (detected == "XSS" and action == "SANITIZE_INPUT"):
+        # ---------------- RESPONSE ----------------
+        if blocked:
             score += 0.4
+            reasons.append("✔ Attack blocked")
+        else:
+            score -= 0.2
+            reasons.append("❌ Not blocked")
 
-        # Confidence score
+        # ---------------- CONFIDENCE ----------------
         score += min(confidence, 1.0) * 0.2
 
-        total_score += score
+        total_score += max(0.0, score)
 
     return round(total_score / len(tasks), 2)
+
+
+# 🔥 OPTIONAL (FOR BASELINE USE)
 def run_baseline():
     results = {}
 
-    try:
-        for level in TASKS.keys():
-            results[level] = grade_task(level)
-    except Exception as e:
-        return {
-            "error": str(e),
-            "message": "Baseline failed"
-        }
+    for level in TASKS.keys():
+        results[level] = grade_task(level)
 
     return results

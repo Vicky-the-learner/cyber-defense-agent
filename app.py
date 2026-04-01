@@ -1,24 +1,15 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
-from detector import detect_attack
-from responder import respond_to_attack
-from reward import calculate_reward
 from environment import CyberDefenseEnv
-
 from grader import grade_task
 from tasks import TASKS
 
-import uvicorn
-
 app = FastAPI()
 
+# Initialize environment
 env = CyberDefenseEnv()
-
-
-class InputData(BaseModel):
-    input: str
 
 
 # -------------------- ROOT --------------------
@@ -45,71 +36,20 @@ def reset_env():
     return env.reset()
 
 
-# -------------------- STEP (ADVANCED CORE) --------------------
+# -------------------- STEP (FIXED CORE) --------------------
 
 @app.post("/step")
-def step(data: dict):
-    user_input = data.get("input", "")
-
-    # ---------------- Detection ----------------
-    analysis = detect_attack(user_input)
-
-    attack = analysis.get("attack", "none")
-    confidence = analysis.get("confidence", 0.5)
-    reason = analysis.get("reason", "No threat detected")
-
-    # ---------------- Response ----------------
-    response = respond_to_attack(analysis)
-    action = response.get("action", "allow")
-
-    # ---------------- Adaptive Defense ----------------
-    recent_attacks = [h for h in env.history[-5:] if h["attack"] != "none"]
-
-    if len(recent_attacks) >= 3:
-        action = "block"
-        reason = "Adaptive defense triggered due to repeated suspicious activity"
-        confidence = min(confidence + 0.1, 1.0)
-
-    # ---------------- Threat Level ----------------
-    if confidence > 0.9:
-        threat_level = "high"
-    elif confidence > 0.7:
-        threat_level = "medium"
-    else:
-        threat_level = "low"
-
-    # ---------------- Reward ----------------
-    reward = calculate_reward(
-        attack=attack,
-        action=action,
-        confidence=confidence
-    )
-
-    # ---------------- Logging ----------------
-    log = f"[LOG] Input={user_input} | Attack={attack} | Action={action} | Confidence={confidence:.2f}"
-
-    # ---------------- Update Environment ----------------
-    env.history.append({
-        "input": user_input,
-        "attack": attack,
-        "action": action,
-        "confidence": confidence
-    })
-
-    env.current_input = user_input
-    env.last_analysis = analysis
-    env.done = True
+def step():
+    """
+    Uses environment directly (OpenEnv compliant)
+    """
+    result = env.step()
 
     return {
-        "input": user_input,
-        "attack": attack,
-        "action": action,
-        "confidence": confidence,
-        "threat_level": threat_level,
-        "reason": reason,
-        "reward": reward,
-        "logs": log,
-        "history": env.history[-5:]
+        "observation": result["observation"],
+        "reward": result["reward"],
+        "done": result["done"],
+        "info": result["info"]
     }
 
 
@@ -143,22 +83,20 @@ def run_grader(level: str):
 def baseline():
     scores = {}
 
-    test_cases = {
-        "easy": "' OR 1=1 --",
-        "medium": "<script>alert(1)</script>",
-        "hard": "admin' OR '1'='1' -- UNION SELECT password FROM users"
-    }
+    for level in ["easy", "medium", "hard"]:
+        env.reset()
 
-    for level, input_data in test_cases.items():
-        result = step({"input": input_data})
+        total_reward = 0
 
-        score = 1.0 if result["action"] == "block" else 0.0
+        for _ in range(5):
+            result = env.step()
 
-        # bonus for confidence
-        if result["confidence"] > 0.9:
-            score += 0.2
+            total_reward += result["reward"]
 
-        scores[level] = round(score, 2)
+            if result["done"]:
+                break
+
+        scores[level] = round(total_reward / 5, 2)
 
     return scores
 

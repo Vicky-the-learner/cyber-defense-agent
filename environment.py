@@ -1,89 +1,120 @@
-#environment.py
-
 from detector import detect_attack
 from responder import respond_to_attack
 from reward import calculate_reward
-from models import CyberObservation   # ✅ FIXED IMPORT
+from models import CyberObservation
+from attacker import Attacker
 import uuid
+
 
 class CyberDefenseEnv:
     def __init__(self):
+        self.attacker = Attacker()
+
         self.current_input = None
         self.last_analysis = None
         self.episode_id = str(uuid.uuid4())
+
         self.step_count = 0
+        self.max_steps = 5
         self.done = False
         self.history = []
+
 
     def reset(self):
-        self.current_input = None
-        self.last_analysis = None
-        self.episode_id = str(uuid.uuid4())
         self.step_count = 0
         self.done = False
         self.history = []
+        self.episode_id = str(uuid.uuid4())
+
+        # Start with easy difficulty
+        self.attacker.set_difficulty("easy")
+
+        attack = self.attacker.generate_attack()
+        self.current_input = attack
 
         return {
-            "state": "Environment reset"
+            "observation": attack,
+            "message": "New attack generated",
+            "episode_id": self.episode_id
         }
 
-    def step(self, input_data):
-        self.current_input = input_data
 
-        # Detection
-        analysis = detect_attack(input_data)
-        self.step_count += 1
+    def step(self, action=None):
+        """
+        action is optional because this is autonomous defense system
+        """
 
-        # ✅ DEFINE VARIABLES FIRST
-        attack = analysis.get("attack", "none")
-        confidence = analysis.get("confidence", 0.5)
-        reason = analysis.get("reason", "No clear pattern")
+        if self.done:
+            return {
+                "message": "Episode already finished. Call reset().",
+                "done": True
+            }
 
-        # ✅ NOW CREATE OBSERVATION
-        observation = CyberObservation(
-            input=input_data,
-            attack=attack,
-            confidence=confidence,
-            message=reason
-        )
+        attack = self.current_input
 
-        # Response
+        analysis = detect_attack(attack)
+
+
         response = respond_to_attack(analysis)
-        action = response.get("action", "allow")
 
-        # Reward
-        expected_attack = analysis.get("expected_attack", attack)
 
-        reward = calculate_reward(
-            detected_attack=attack,
-            expected_attack=expected_attack,
-            action=action,
-            confidence=confidence
+        reward_data = calculate_reward(analysis, response, attack)
+        reward = reward_data["reward"]
+
+
+        observation = CyberObservation(
+            input=str(attack),
+            attack=analysis.get("attack_type", "Unknown"),
+            confidence=analysis.get("confidence", 0.5),
+            message=analysis.get("explanation", "")
         )
 
-        # Save state
-        self.last_analysis = analysis
-        self.done = True
 
-        # History
         self.history.append({
-            "input": input_data,
+            "step": self.step_count + 1,
             "attack": attack,
-            "action": action,
-            "confidence": confidence
+            "analysis": analysis,
+            "response": response,
+            "reward": reward
         })
 
+        if reward > 0.7:
+            self.attacker.set_difficulty("hard")
+        elif reward > 0.4:
+            self.attacker.set_difficulty("medium")
+        else:
+            self.attacker.set_difficulty("easy")
+
+
+        next_attack = self.attacker.generate_attack()
+        self.current_input = next_attack
+
+
+        self.step_count += 1
+        self.done = self.step_count >= self.max_steps
+
+
+        print("\n==============================")
+        print(f"⚔️ Attack: {attack}")
+        print(f"🧠 Detection: {analysis}")
+        print(f"🛡 Response: {response}")
+        print(f"🏆 Reward: {reward}")
+        print("==============================\n")
+
+
         return {
-            "state": {
-                "episode_id": self.episode_id,
-                "input": input_data,
-                "analysis": observation.dict(),  # ✅ FIXED
-                "history": self.history[-5:]
-            },
-            "response": response,
+            "observation": next_attack,
             "reward": reward,
-            "done": self.done
+            "done": self.done,
+            "info": {
+                "analysis": observation.dict(),
+                "response": response,
+                "reward_details": reward_data["details"],
+                "step": self.step_count,
+                "episode_id": self.episode_id
+            }
         }
+
 
     def state(self):
         return {

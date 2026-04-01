@@ -24,7 +24,7 @@ observation_space:
           type: string
         confidence:
           type: number
-        explanation:
+        message:
           type: string
 
 action_space:

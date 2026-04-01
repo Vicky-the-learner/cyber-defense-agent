@@ -1,56 +1,48 @@
 import os
 import requests
-from openai import OpenAI
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
-API_KEY = os.getenv("HF_TOKEN", "dummy")
-
-client = OpenAI(api_key=API_KEY)
 
 TASKS = ["easy", "medium", "hard"]
 
-def run_task(task):
+
+def run_episode():
+    # Reset environment
     requests.post(f"{API_BASE_URL}/reset")
 
-    inputs = [
-        "' OR 1=1 --",
-        "<script>alert(1)</script>",
-        "normal user input"
-    ]
+    total_reward = 0
+    steps = 0
 
-    total_score = 0
-
-    for inp in inputs:
-        response = requests.post(
-            f"{API_BASE_URL}/step",
-            json={"task": task, "input": inp}
-        )
-
+    while True:
         try:
+            response = requests.post(f"{API_BASE_URL}/step", json={})
             result = response.json()
-        except:
+        except Exception:
             continue
 
-        attack = result.get("attack", "none")
-        action = result.get("action", "allow")
+        reward = result.get("reward", 0.0)
+        done = result.get("done", False)
 
-        # simple scoring logic
-        if attack != "none" and action == "block":
-            total_score += 1
-        elif attack == "none" and action == "allow":
-            total_score += 1
+        total_reward += reward
+        steps += 1
 
-    return total_score / len(inputs)
+        if done:
+            break
+
+    # Average reward per episode
+    avg_reward = total_reward / max(steps, 1)
+
+    return round(avg_reward, 2)
 
 
 def main():
     scores = {}
 
     for task in TASKS:
-        score = run_task(task)
+        score = run_episode()
         scores[task] = score
 
+    print("\n📊 BASELINE SCORES")
     print(scores)
 
 

@@ -101,9 +101,15 @@ Hard   -> Complex multi-step and advanced injections
 
 ## 📊 Reward Strategy
 
-+1    -> Correct detection and response  
--1    -> Incorrect or missed action  
-+0.5  -> Partial detection  
+The reward is calculated based on multiple factors:
+
+- ✅ Detection accuracy (correct identification of attack)
+- 🛡️ Response correctness (blocking or allowing appropriately)
+- 🎯 Confidence score (higher confidence gives bonus)
+- ⚡ Severity handling (critical attacks give extra reward if handled correctly)
+- ❌ Penalties for false positives and missed attacks
+
+The final reward is normalized between **0.0 and 1.0**, enabling smooth learning and evaluation.
 
 ---
 

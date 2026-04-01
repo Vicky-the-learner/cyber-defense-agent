@@ -1,28 +1,63 @@
 #reward.py
 
-def calculate_reward(detected_attack, expected_attack, action, confidence):
+def calculate_reward(analysis, response, attack):
+    """
+    analysis: output from detector
+    response: output from responder
+    attack: original attack object (from attacker.py)
+    """
+
     reward = 0.0
+    details = []
 
-    # 🔥 Detection correctness (major)
-    if detected_attack == expected_attack:
-        reward += 0.5
-    else:
-        reward -= 0.3
+    is_actual_attack = attack["type"].lower() != "normal"
+    detected_attack = analysis["is_attack"]
+    blocked = response.get("blocked", False)
+    confidence = analysis.get("confidence", 0.5)
+    severity = attack.get("severity", 0.5)
 
-    # 🔥 Action correctness
-    correct_actions = {
-        "SQL Injection": "BLOCK_IP",
-        "XSS": "SANITIZE_INPUT",
-        "none": "ALLOW"
-    }
 
-    if correct_actions.get(expected_attack) == action:
+    if is_actual_attack and detected_attack:
         reward += 0.3
-    else:
+        details.append("✔ Correct detection")
+    elif is_actual_attack and not detected_attack:
+        reward -= 0.3
+        details.append("❌ Missed attack")
+    elif not is_actual_attack and detected_attack:
         reward -= 0.2
+        details.append("⚠ False positive")
+    else:
+        reward += 0.1
+        details.append("✔ Correctly ignored normal input")
 
-    # 🔥 Confidence contribution
-    reward += min(confidence, 1.0) * 0.2
+   
+    if detected_attack and blocked:
+        reward += 0.4
+        details.append("✔ Attack blocked")
+    elif detected_attack and not blocked:
+        reward -= 0.2
+        details.append("❌ Detected but not blocked")
+    elif not detected_attack and blocked:
+        reward -= 0.2
+        details.append("⚠ Blocked normal traffic")
 
-    # Clamp between 0 and 1
-    return round(max(0.0, min(1.0, reward)), 2)
+    if confidence > 0.8:
+        reward += 0.1
+        details.append("✔ High confidence")
+
+
+    if severity > 0.8 and blocked:
+        reward += 0.1
+        details.append("✔ Handled critical attack")
+
+
+    if is_actual_attack and not blocked:
+        reward -= 0.2
+        details.append("❌ Attack not mitigated")
+
+    reward = max(0.0, min(1.0, reward))
+
+    return {
+        "reward": round(reward, 2),
+        "details": details
+    }
