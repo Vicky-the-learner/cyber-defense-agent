@@ -15,17 +15,17 @@ if st.button("Run Simulation"):
     try:
         requests.post(f"{API_URL}/reset")
 
-        response = requests.post(
-            f"{API_URL}/step",
-            response = requests.post(f"{API_URL}/step", json={})
-        )
+        response = requests.post(f"{API_URL}/step", json={})
 
         result = response.json()
 
         st.subheader("🧠 AI Decision")
 
-        attack = result.get("attack", "none")
-        action = result.get("action", "none")
+        analysis = result["info"]["analysis"]
+        response_data = result["info"]["response"]
+
+        attack = analysis.get("attack", "Normal")
+        action = response_data.get("action", "ALLOW")
 
         if attack != "none":
             st.error(f"🚨 Attack Detected: {attack.upper()}")
