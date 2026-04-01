@@ -1,5 +1,3 @@
-# reward.py
-
 def calculate_reward(detected_attack, expected_attack, action, confidence):
     reward = 0.0
 
@@ -7,11 +5,16 @@ def calculate_reward(detected_attack, expected_attack, action, confidence):
     if detected_attack == expected_attack:
         reward += 0.5
     else:
-        reward -= 0.3  # penalty
+        reward -= 0.3
 
     # 🔥 Action correctness
-    if (expected_attack == "SQL Injection" and action == "BLOCK_IP") or \
-       (expected_attack == "XSS" and action == "SANITIZE_INPUT"):
+    correct_actions = {
+        "SQL Injection": "BLOCK_IP",
+        "XSS": "SANITIZE_INPUT",
+        "none": "ALLOW"
+    }
+
+    if correct_actions.get(expected_attack) == action:
         reward += 0.3
     else:
         reward -= 0.2

@@ -1,18 +1,23 @@
 from detector import detect_attack
 from responder import respond_to_attack
 from reward import calculate_reward
-
+from models import CyberObservation   # ✅ FIXED IMPORT
+import uuid
 
 class CyberDefenseEnv:
     def __init__(self):
         self.current_input = None
         self.last_analysis = None
+        self.episode_id = str(uuid.uuid4())
+        self.step_count = 0
         self.done = False
         self.history = []
 
     def reset(self):
         self.current_input = None
         self.last_analysis = None
+        self.episode_id = str(uuid.uuid4())
+        self.step_count = 0
         self.done = False
         self.history = []
 
@@ -25,19 +30,31 @@ class CyberDefenseEnv:
 
         # Detection
         analysis = detect_attack(input_data)
+        self.step_count += 1
 
-        # Ensure AI-like fields exist
+        # ✅ DEFINE VARIABLES FIRST
         attack = analysis.get("attack", "none")
         confidence = analysis.get("confidence", 0.5)
         reason = analysis.get("reason", "No clear pattern")
+
+        # ✅ NOW CREATE OBSERVATION
+        observation = CyberObservation(
+            input=input_data,
+            attack=attack,
+            confidence=confidence,
+            message=reason
+        )
 
         # Response
         response = respond_to_attack(analysis)
         action = response.get("action", "allow")
 
-        # Reward (fixed)
+        # Reward
+        expected_attack = analysis.get("expected_attack", attack)
+
         reward = calculate_reward(
-            attack=attack,
+            detected_attack=attack,
+            expected_attack=expected_attack,
             action=action,
             confidence=confidence
         )
@@ -46,7 +63,7 @@ class CyberDefenseEnv:
         self.last_analysis = analysis
         self.done = True
 
-        # 🔥 NEW: Store history (Day 2 upgrade)
+        # History
         self.history.append({
             "input": input_data,
             "attack": attack,
@@ -56,9 +73,10 @@ class CyberDefenseEnv:
 
         return {
             "state": {
+                "episode_id": self.episode_id,
                 "input": input_data,
-                "analysis": analysis,
-                "history": self.history[-5:]  # last 5 actions
+                "analysis": observation.dict(),  # ✅ FIXED
+                "history": self.history[-5:]
             },
             "response": response,
             "reward": reward,
@@ -67,8 +85,10 @@ class CyberDefenseEnv:
 
     def state(self):
         return {
+            "episode_id": self.episode_id,
             "current_input": self.current_input,
             "last_analysis": self.last_analysis,
             "history": self.history,
+            "step_count": self.step_count,
             "done": self.done
         }
