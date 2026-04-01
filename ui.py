@@ -7,41 +7,63 @@ st.set_page_config(page_title="AI Cyber Defense Agent", layout="wide")
 
 st.title("🛡️ AI Cyber Defense Agent")
 
+# -------------------- TASK SELECT --------------------
+
 task = st.selectbox("Select Task Level", ["easy", "medium", "hard"])
 
-user_input = st.text_area("Enter request / log", height=150)
+st.markdown("### 🔍 Simulation")
 
 if st.button("Run Simulation"):
     try:
+        # Reset environment
         requests.post(f"{API_URL}/reset")
 
-        response = requests.post(f"{API_URL}/step", json={})
+        st.write("🚀 Starting simulation...\n")
 
-        result = response.json()
+        for step in range(5):
+            response = requests.post(f"{API_URL}/step", json={})
+            result = response.json()
 
-        st.subheader("🧠 AI Decision")
+            analysis = result["info"]["analysis"]
+            response_data = result["info"]["response"]
+            reward = result.get("reward", 0.0)
 
-        analysis = result["info"]["analysis"]
-        response_data = result["info"]["response"]
+            attack = analysis.get("attack", "Normal")
+            confidence = analysis.get("confidence", 0.0)
+            action = response_data.get("action", "ALLOW")
 
-        attack = analysis.get("attack", "Normal")
-        action = response_data.get("action", "ALLOW")
+            st.markdown(f"### Step {step + 1}")
 
-        if attack != "none":
-            st.error(f"🚨 Attack Detected: {attack.upper()}")
-        else:
-            st.success("✅ No Attack Detected")
+            # Attack status
+            if attack.lower() != "normal":
+                st.error(f"🚨 Attack Detected: {attack}")
+            else:
+                st.success("✅ No Attack Detected")
 
-        st.info(f"Action Taken: {action}")
+            # Details
+            st.write(f"🛡️ Action: {action}")
+            st.write(f"🎯 Confidence: {confidence}")
+            st.write(f"🏆 Reward: {reward}")
+
+            st.divider()
+
+            if result.get("done"):
+                break
+
+        st.success("✅ Simulation Complete")
 
     except Exception as e:
-        st.error(str(e))
-        
+        st.error(f"Error: {str(e)}")
+
+
+# -------------------- BASELINE --------------------
+
+st.markdown("### 📊 Baseline Evaluation")
+
 if st.button("Run Baseline"):
     try:
         baseline = requests.get(f"{API_URL}/baseline").json()
         st.subheader("📊 Scores")
-        st.write(baseline)
+        st.json(baseline)
     except Exception as e:
         st.error(str(e))
-        
