@@ -20,8 +20,6 @@ observation_space:
       properties:
         attack:
           type: string
-        severity:
-          type: string
         confidence:
           type: number
         message:

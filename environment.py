@@ -53,7 +53,7 @@ class CyberDefenseEnv:
         attack = self.current_input
 
         analysis = detect_attack(attack)
-
+        self.last_analysis = analysis
 
         response = respond_to_attack(analysis)
 

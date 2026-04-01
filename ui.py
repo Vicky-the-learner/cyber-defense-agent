@@ -17,7 +17,7 @@ if st.button("Run Simulation"):
 
         response = requests.post(
             f"{API_URL}/step",
-            json={"task": task, "input": user_input}
+            response = requests.post(f"{API_URL}/step", json={})
         )
 
         result = response.json()
