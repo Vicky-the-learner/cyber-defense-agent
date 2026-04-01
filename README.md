@@ -6,10 +6,12 @@ app_file: app.py
 # 🛡️ AI Cyber Defense Agent (OpenEnv)
 
 ## 🚀 Overview
+
 The AI Cyber Defense Agent is a **real-world simulation environment** built using the OpenEnv framework.  
 It enables AI systems to detect, analyze, and respond to cyber attacks in a controlled environment.
 
 This project focuses on simulating real-world threats such as:
+
 - SQL Injection
 - Cross-Site Scripting (XSS)
 - Command Injection
@@ -21,9 +23,11 @@ Agents interact using standardized APIs (`step`, `reset`, `state`) and learn opt
 ---
 
 ## 🎯 Problem Statement
+
 Modern web applications are constantly exposed to automated and evolving cyber threats.
 
 Traditional security systems:
+
 - Rely on static rules
 - Fail against obfuscated or unknown attacks
 - Cannot adapt dynamically
@@ -33,6 +37,7 @@ There is a need for **intelligent, adaptive cybersecurity systems** capable of l
 ---
 
 ## 💡 Proposed Solution
+
 This project introduces a **simulation-based AI cyber defense environment** where:
 
 - Attack inputs are generated
@@ -45,11 +50,13 @@ This allows training and evaluation of **AI-driven intrusion detection and respo
 ---
 
 ## 🏗️ System Architecture
+
 User Input → Detection Engine → Response Module → Reward Function → Agent Learning
 
 ---
 
 ## ⚙️ Core Features
+
 - 🔍 Multi-vector attack detection (SQLi, XSS, Command Injection, Path Traversal, Brute Force)
 - 🤖 AI-ready environment (extendable with LLMs or ML models)
 - ⚡ Real-time response mechanism (block / allow decisions)
@@ -93,6 +100,7 @@ Hard   -> Complex multi-step and advanced injections
 ---
 
 ## 📊 Reward Strategy
+
 +1    -> Correct detection and response  
 -1    -> Incorrect or missed action  
 +0.5  -> Partial detection  
@@ -100,6 +108,7 @@ Hard   -> Complex multi-step and advanced injections
 ---
 
 ## 🌍 Real-World Applications
+
 - Web Application Firewalls (WAF)
 - API Security Gateways
 - Intrusion Detection Systems (IDS)
@@ -109,12 +118,14 @@ Hard   -> Complex multi-step and advanced injections
 ---
 
 ## 🚀 Deployment
+
 Live Application:
-https://kiko555-cyber-defense-agent.hf.space
+<https://kiko555-cyber-defense-agent.hf.space>
 
 ---
 
 ## 🧠 Future Scope
+
 - Integration with deep learning-based detection models  
 - Real-time traffic monitoring  
 - Adaptive threat intelligence systems  
@@ -124,4 +135,5 @@ https://kiko555-cyber-defense-agent.hf.space
 ---
 
 ## 👨‍💻 Author
+
 Vicky-the-learner

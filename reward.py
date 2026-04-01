@@ -1,3 +1,5 @@
+#reward.py
+
 def calculate_reward(detected_attack, expected_attack, action, confidence):
     reward = 0.0
 

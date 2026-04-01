@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 
@@ -16,4 +16,4 @@ class CyberObservation(BaseModel):
 class CyberState(BaseModel):
     episode_id: Optional[str] = None
     step_count: int = 0
-    history: List[dict] = []
+    history: List[dict] = Field(default_factory=list)

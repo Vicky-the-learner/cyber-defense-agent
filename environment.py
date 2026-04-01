@@ -1,3 +1,5 @@
+#environment.py
+
 from detector import detect_attack
 from responder import respond_to_attack
 from reward import calculate_reward
