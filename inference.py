@@ -42,10 +42,14 @@ def main():
     scores = {}
 
     for task in TASKS:
+        print(f"START task={task}")
+
         score = run_episode(task)
         scores[task] = score
 
-    print("\n📊 BASELINE SCORES")
+        print(f"END task={task} score={score}")
+
+    print("\n📊 FINAL SCORES")
     print(scores)
 
 
