@@ -5,80 +5,67 @@ app_file: app.py
 
 # 🛡️ AI Cyber Defense Agent (OpenEnv)
 
-## 🚀 Overview
+## 🌍 Real-World AI Security Simulation Environment
 
-The AI Cyber Defense Agent is a **real-world simulation environment** built using the OpenEnv framework.  
-It enables AI systems to detect, analyze, and respond to cyber attacks in a controlled environment.
+An advanced AI-powered Cyber Defense Environment built using the OpenEnv framework, designed to simulate real-world cyber attacks and evaluate intelligent defense strategies.
 
-This project focuses on simulating real-world threats such as:
-
-- SQL Injection
-- Cross-Site Scripting (XSS)
-- Command Injection
-- Path Traversal
-- Brute Force Attacks
-
-Agents interact using standardized APIs (`step`, `reset`, `state`) and learn optimal defense strategies through reward-based feedback.
+🔗 Live Demo: <https://kiko555-cyber-defense-agent.hf.space>  
+💻 GitHub Repo: <https://github.com/Vicky-the-learner/cyber-defense-agent>  
 
 ---
 
-## 🎯 Problem Statement
+## 🚨 Problem
 
-Modern web applications are constantly exposed to automated and evolving cyber threats.
+Modern systems face continuous, automated cyber attacks:
 
-Traditional security systems:
+- Static rule-based systems fail against evolving threats  
+- Unknown/obfuscated attacks bypass traditional defenses  
+- Manual security systems are slow and non-adaptive  
 
-- Rely on static rules
-- Fail against obfuscated or unknown attacks
-- Cannot adapt dynamically
-
-There is a need for **intelligent, adaptive cybersecurity systems** capable of learning from interactions.
+👉 There is a critical need for intelligent, self-learning cyber defense systems
 
 ---
 
-## 💡 Proposed Solution
+## 🤖 Solution
 
-This project introduces a **simulation-based AI cyber defense environment** where:
+This project introduces a simulation-based AI Cyber Defense Agent that:
 
-- Attack inputs are generated
-- The system detects malicious behavior
-- Appropriate defensive actions are taken
-- Rewards guide the learning process
-
-This allows training and evaluation of **AI-driven intrusion detection and response systems**.
+- Detects malicious inputs  
+- Classifies attack types  
+- Executes defensive actions  
+- Learns via reward-driven feedback  
 
 ---
 
 ## 🏗️ System Architecture
 
-User Input → Detection Engine → Response Module → Reward Function → Agent Learning
+User Input → Detection Engine → Response Module → Reward System → Agent Learning
 
 ---
 
-## ⚙️ Core Features
+## ⚡ Key Features
 
-- 🔍 Multi-vector attack detection (SQLi, XSS, Command Injection, Path Traversal, Brute Force)
-- 🤖 AI-ready environment (extendable with LLMs or ML models)
-- ⚡ Real-time response mechanism (block / allow decisions)
-- 🎯 Reward-driven evaluation system
-- 🧪 Multi-level tasks (Easy / Medium / Hard)
-- 📊 Built-in baseline scoring
-- 🌐 Fully deployed and accessible via Hugging Face Spaces
+- Multi-attack detection (SQLi, XSS, Command Injection, Path Traversal, Brute Force)  
+- AI-ready environment  
+- Reward-based evaluation  
+- Multi-level tasks (Easy / Medium / Hard)  
+- Real-time decision engine  
+- Baseline scoring system  
 
 ---
 
 ## 📡 API Endpoints
 
 /reset   -> Reset environment  
-/step    -> Process input and return action  
-/state   -> Retrieve environment state  
-/tasks   -> List available tasks  
-/grader/{level} -> Evaluate agent performance  
-/baseline -> Run baseline evaluation  
+/step    -> Process action  
+/state   -> Get state  
+/tasks   -> List tasks  
+/grader  -> Evaluate  
+/baseline -> Run baseline  
 
 ---
 
-## 🧪 Example Interaction
+## 🧪 Example
 
 Input:
 ' OR 1=1 --
@@ -93,50 +80,36 @@ Output:
 
 ## 🏆 Task Levels
 
-Easy   -> Basic attack patterns  
-Medium -> Encoded and script-based attacks  
-Hard   -> Complex multi-step and advanced injections  
+Easy   -> Basic  
+Medium -> Encoded  
+Hard   -> Advanced  
 
 ---
 
-## 📊 Reward Strategy
+## 📊 Reward System
 
-The reward is calculated based on multiple factors:
+- Detection Accuracy  
+- Response Correctness  
+- Confidence Score  
+- Severity Handling  
+- Penalty for mistakes  
 
-- ✅ Detection accuracy (correct identification of attack)
-- 🛡️ Response correctness (blocking or allowing appropriately)
-- 🎯 Confidence score (higher confidence gives bonus)
-- ⚡ Severity handling (critical attacks give extra reward if handled correctly)
-- ❌ Penalties for false positives and missed attacks
-
-The final reward is normalized between **0.0 and 1.0**, enabling smooth learning and evaluation.
+Range: 0.0 to 1.0
 
 ---
 
-## 🌍 Real-World Applications
+## 🌍 Applications
 
-- Web Application Firewalls (WAF)
-- API Security Gateways
-- Intrusion Detection Systems (IDS)
-- Automated Cyber Defense Platforms
-- AI Security Training Environments
+- WAF  
+- IDS  
+- API Security  
+- AI Defense Systems  
 
 ---
 
 ## 🚀 Deployment
 
-Live Application:
-<https://kiko555-cyber-defense-agent.hf.space>
-
----
-
-## 🧠 Future Scope
-
-- Integration with deep learning-based detection models  
-- Real-time traffic monitoring  
-- Adaptive threat intelligence systems  
-- Self-learning defense mechanisms  
-- Integration with SIEM tools  
+<https://kiko555-cyber-defense-agent.hf.space>  
 
 ---
 
