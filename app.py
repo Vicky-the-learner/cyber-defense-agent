@@ -5,8 +5,7 @@ import uvicorn
 from environment import CyberDefenseEnv
 from grader import grade_task
 
-app = FastAPI()
-
+app = FastAPI(openapi_url="/openapi.json")
 # Initialize environment
 env = CyberDefenseEnv()
 
@@ -33,6 +32,10 @@ def reset_env(data: dict = {}):
     task = data.get("task", "easy")
     return env.reset(task)
 
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 @app.post("/step")
@@ -122,5 +125,3 @@ app.add_middleware(
 
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7860)
