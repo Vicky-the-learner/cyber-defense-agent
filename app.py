@@ -5,8 +5,7 @@ import uvicorn
 from environment import CyberDefenseEnv
 from grader import grade_task
 
-app = FastAPI(openapi_url="/openapi.json")
-# Initialize environment
+app = FastAPI(root_path="")# Initialize environment
 env = CyberDefenseEnv()
 
 
@@ -113,6 +112,9 @@ def baseline():
 
     return scores
 
+@app.get("/debug")
+def debug():
+    return {"status": "routes working"}
 
 
 app.add_middleware(
