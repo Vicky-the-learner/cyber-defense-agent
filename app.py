@@ -4,7 +4,6 @@ import uvicorn
 
 from environment import CyberDefenseEnv
 from grader import grade_task
-from tasks import TASKS
 
 app = FastAPI()
 
@@ -12,7 +11,7 @@ app = FastAPI()
 env = CyberDefenseEnv()
 
 
-# -------------------- ROOT --------------------
+
 
 @app.get("/")
 def home():
@@ -23,85 +22,95 @@ def home():
             "/step",
             "/state",
             "/tasks",
-            "/grader/{level}",
+            "/grader",
             "/baseline"
         ]
     }
 
 
-# -------------------- RESET --------------------
-
 @app.api_route("/reset", methods=["GET", "POST"])
-def reset_env():
-    return env.reset()
+def reset_env(data: dict = {}):
+    task = data.get("task", "easy")
+    return env.reset(task)
 
 
-# -------------------- STEP (FIXED CORE) --------------------
 
 @app.post("/step")
-def step():
-    """
-    Uses environment directly (OpenEnv compliant)
-    """
-    result = env.step()
+def step(action: dict = {}):
+    try:
+        result = env.step(action)
+    except Exception:
+        result = {
+            "observation": {},
+            "reward": 0.0,
+            "done": True,
+            "info": {"error": "step failed"}
+        }
 
     return {
-        "observation": result["observation"],
-        "reward": result["reward"],
-        "done": result["done"],
-        "info": result["info"]
+        "observation": result.get("observation", {}),
+        "reward": result.get("reward", 0.0),
+        "done": result.get("done", False),
+        "info": result.get("info", {})
     }
 
 
-# -------------------- STATE --------------------
 
 @app.get("/state")
 def get_state():
-    return env.state()
+    try:
+        return env.state()
+    except Exception:
+        return {"state": "error"}
 
 
-# -------------------- TASKS --------------------
 
 @app.get("/tasks")
 def get_tasks():
-    return TASKS
-
-
-# -------------------- GRADER --------------------
-
-@app.get("/grader/{level}")
-def run_grader(level: str):
     return {
-        "level": level,
-        "score": grade_task(level)
+        "tasks": ["easy", "medium", "hard"]
     }
 
 
-# -------------------- BASELINE --------------------
+@app.post("/grader")
+def run_grader(data: dict):
+    try:
+        task = data.get("task", "easy")
+        score = grade_task(task)
+    except Exception:
+        task = "unknown"
+        score = 0.0
+
+    return {
+        "task": task,
+        "score": float(score)
+    }
+
 
 @app.get("/baseline")
 def baseline():
     scores = {}
 
-    for level in ["easy", "medium", "hard"]:
-        env.reset()
+    for task in ["easy", "medium", "hard"]:
+        try:
+            env.reset(task)
+            total_reward = 0.0
 
-        total_reward = 0
+            for _ in range(5):
+                result = env.step({"action": "analyze"})
+                total_reward += result.get("reward", 0.0)
 
-        for _ in range(5):
-            result = env.step()
+                if result.get("done", False):
+                    break
 
-            total_reward += result["reward"]
+            scores[task] = round(total_reward / 5, 2)
 
-            if result["done"]:
-                break
-
-        scores[level] = round(total_reward / 5, 2)
+        except Exception:
+            scores[task] = 0.0
 
     return scores
 
 
-# -------------------- CORS --------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -112,7 +121,6 @@ app.add_middleware(
 )
 
 
-# -------------------- RUN --------------------
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7860)
