@@ -1,35 +1,27 @@
 import os
-import subprocess
-import sys
-
-# 🔧 Ensure requests is installed (IMPORTANT FIX)
-try:
-    import requests
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
-    import requests
-
+import json
+import urllib.request
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4")
-HF_TOKEN = os.getenv("HF_TOKEN")  # NO DEFAULT
 
 TASKS = ["easy", "medium", "hard"]
 
 
-def safe_post(url, payload=None):
-    """Safe POST request to avoid crashes"""
+def safe_post(url, data=None):
     try:
-        response = requests.post(url, json=payload, timeout=5)
-        if response.status_code != 200:
-            return None
-        return response.json()
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(data).encode("utf-8") if data else None,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=5) as response:
+            return json.loads(response.read().decode())
     except Exception:
         return None
 
 
 def run_episode(task):
-    # Reset environment
     safe_post(f"{API_BASE_URL}/reset", {"task": task})
 
     total_reward = 0.0
@@ -37,9 +29,7 @@ def run_episode(task):
     max_steps = 50
 
     while steps < max_steps:
-        result = safe_post(f"{API_BASE_URL}/step", {
-            "action": "analyze"
-        })
+        result = safe_post(f"{API_BASE_URL}/step", {"action": "analyze"})
 
         if not result:
             break
@@ -47,11 +37,9 @@ def run_episode(task):
         reward = result.get("reward", 0.0)
         done = result.get("done", False)
 
-        total_reward += reward
-
-        # STEP LOG (important for judges)
         print(f"STEP task={task} step={steps} reward={reward}")
 
+        total_reward += reward
         steps += 1
 
         if done:
@@ -70,13 +58,13 @@ def main():
         try:
             score = run_episode(task)
         except Exception:
-            score = 0.0  # fallback safety
+            score = 0.0
 
         scores[task] = score
 
         print(f"END task={task} score={score}")
 
-    print("\n📊 FINAL SCORES")
+    print("\nFINAL SCORES")
     print(scores)
 
 

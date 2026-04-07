@@ -6,6 +6,7 @@ from environment import CyberDefenseEnv
 from grader import grade_task
 
 app = FastAPI()
+
 # Initialize environment
 env = CyberDefenseEnv()
 
