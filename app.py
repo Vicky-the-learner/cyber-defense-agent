@@ -5,7 +5,8 @@ import uvicorn
 from environment import CyberDefenseEnv
 from grader import grade_task
 
-app = FastAPI(root_path="")# Initialize environment
+app = FastAPI()
+# Initialize environment
 env = CyberDefenseEnv()
 
 
