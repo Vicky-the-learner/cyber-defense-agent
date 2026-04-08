@@ -7,7 +7,7 @@ endpoints:
   step: /step
   state: /state
   tasks: /tasks
-  grader: /grader/{level}
+  grader: /grader
   baseline: /baseline
 
 observation_space:
