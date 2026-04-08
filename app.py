@@ -72,7 +72,8 @@ def get_state():
 @app.get("/tasks")
 def get_tasks():
     return {
-        "tasks": ["easy", "medium", "hard"]
+        "tasks": ["easy", "medium", "hard"],
+        "status": "final-fixed-v3"
     }
 
 
