@@ -9,41 +9,29 @@ import uuid
 class CyberDefenseEnv:
     def __init__(self):
         self.attacker = Attacker()
-
         self.current_input = None
         self.last_analysis = None
         self.episode_id = str(uuid.uuid4())
-
         self.step_count = 0
         self.max_steps = 5
         self.done = False
         self.history = []
 
-
-    def reset(self):
+    def reset(self, task="easy"):
         self.step_count = 0
         self.done = False
         self.history = []
         self.episode_id = str(uuid.uuid4())
-
-        # Start with easy difficulty
-        self.attacker.set_difficulty("easy")
-
+        self.attacker.set_difficulty(task)
         attack = self.attacker.generate_attack()
         self.current_input = attack
-
         return {
             "observation": attack,
             "message": "New attack generated",
             "episode_id": self.episode_id
         }
 
-
     def step(self, action=None):
-        """
-        action is optional because this is autonomous defense system
-        """
-
         if self.done:
             return {
                 "message": "Episode already finished. Call reset().",
@@ -51,16 +39,11 @@ class CyberDefenseEnv:
             }
 
         attack = self.current_input
-
         analysis = detect_attack(attack)
         self.last_analysis = analysis
-
         response = respond_to_attack(analysis)
-
-
         reward_data = calculate_reward(analysis, response, attack)
         reward = reward_data["reward"]
-
 
         observation = CyberObservation(
             input=str(attack),
@@ -68,7 +51,6 @@ class CyberDefenseEnv:
             confidence=analysis.get("confidence", 0.5),
             message=analysis.get("explanation", "")
         )
-
 
         self.history.append({
             "step": self.step_count + 1,
@@ -85,22 +67,10 @@ class CyberDefenseEnv:
         else:
             self.attacker.set_difficulty("easy")
 
-
         next_attack = self.attacker.generate_attack()
         self.current_input = next_attack
-
-
         self.step_count += 1
         self.done = self.step_count >= self.max_steps
-
-
-        print("\n==============================")
-        print(f"⚔️ Attack: {attack}")
-        print(f"🧠 Detection: {analysis}")
-        print(f"🛡 Response: {response}")
-        print(f"🏆 Reward: {reward}")
-        print("==============================\n")
-
 
         return {
             "observation": next_attack,
@@ -114,7 +84,6 @@ class CyberDefenseEnv:
                 "episode_id": self.episode_id
             }
         }
-
 
     def state(self):
         return {
