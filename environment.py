@@ -4,7 +4,7 @@ from reward import calculate_reward
 from models import CyberObservation
 from attacker import Attacker
 import uuid
-
+from ai_agent import analyze_input
 
 class CyberDefenseEnv:
     def __init__(self):
@@ -49,14 +49,16 @@ class CyberDefenseEnv:
 
         # ---------------- DETECTION ----------------
         try:
-            analysis = detect_attack(attack)
-        except Exception:
+            llm_result = analyze_input(str(attack))
+
             analysis = {
-                "attack_type": "Unknown",
-                "confidence": 0.5,
-                "explanation": "Detection failed",
-                "is_attack": False
-            }
+    "attack_type": llm_result.get("attack", "Unknown"),
+    "confidence": 0.8,
+    "explanation": "LLM-based detection",
+    "is_attack": llm_result.get("attack", "unknown") != "unknown"
+}
+        except Exception:
+            analysis = detect_attack(attack)
 
         self.last_analysis = analysis
 
