@@ -1,7 +1,6 @@
 import os
-import json
 import urllib.request
-
+import json
 API_BASE_URL = os.getenv(
     "API_BASE_URL",
     "https://kikossy-cyber-defense-agent.hf.space"
