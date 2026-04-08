@@ -1,6 +1,7 @@
 import os
 import json
 import urllib.request
+from ai_agent import analyze_input
 
 API_BASE_URL = os.getenv(
     "API_BASE_URL",
@@ -28,22 +29,20 @@ def safe_post(url, data=None):
 
 
 def choose_action(observation):
-    obs_str = str(observation).lower()
+    try:
+        result = analyze_input(str(observation))
 
-    # SQL Injection / XSS
-    if any(k in obs_str for k in ["sql", "select", "insert", "xss", "<script>", "javascript"]):
-        return "SANITIZE_INPUT"
+        action = result.get("action", "allow").lower()
 
-    # Path traversal / brute / scan
-    if any(k in obs_str for k in ["../", "traversal", "scan", "flood"]):
+        if action == "block":
+            return "BLOCK_IP"
+        elif action == "sanitize":
+            return "SANITIZE_INPUT"
+        else:
+            return "BLOCK_IP"
+
+    except Exception:
         return "BLOCK_IP"
-
-    # Command injection
-    if any(k in obs_str for k in ["cmd", "exec", "bash", ";", "&&"]):
-        return "SANITIZE_INPUT"
-
-    return "BLOCK_IP"
-
 
 def run_episode(task):
     print(f"[START] task={task}", flush=True)
