@@ -28,10 +28,14 @@ class CyberDefenseEnv:
         self.current_input = attack
 
         return {
-            "observation": attack,
+        "observation": attack,
+        "reward": 0.0,
+        "done": False,
+        "info": {
             "message": "New attack generated",
             "episode_id": self.episode_id
         }
+    }
 
     def step(self, action=None):
         # ---------------- SAFETY: if already done ----------------
