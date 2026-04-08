@@ -2,7 +2,8 @@ import os
 import json
 import urllib.request
 
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
+
 
 if not API_BASE_URL:
     print("ERROR: API_BASE_URL not set")
