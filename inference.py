@@ -2,8 +2,10 @@ import os
 import json
 import urllib.request
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
-
+API_BASE_URL = os.getenv(
+    "API_BASE_URL",
+    "https://kikossy-cyber-defense-agent.hf.space"
+)
 
 if not API_BASE_URL:
     print("ERROR: API_BASE_URL not set")
