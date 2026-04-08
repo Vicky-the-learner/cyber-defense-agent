@@ -3,7 +3,8 @@ def calculate_reward(analysis, response, attack):
     reward = 0.0   # ← THIS WAS MISSING, causing crash every time
     details = []
 
-    is_actual_attack = attack["type"].lower() != "normal"
+    attack_type = attack.get("type", "normal") if isinstance(attack, dict) else "normal"
+    is_actual_attack = attack_type.lower() != "normal"
     detected_attack = analysis["is_attack"]
     blocked = response.get("blocked", False)
     confidence = analysis.get("confidence", 0.5)
