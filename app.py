@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -28,11 +28,15 @@ def home():
     }
 
 
-@app.api_route("/reset", methods=["GET", "POST"])
-def reset_env(data: dict = {}):
+@app.post("/reset")
+async def reset_env(request: Request):
+    try:
+        data = await request.json()
+    except:
+        data = {}
+
     task = data.get("task", "easy")
     return env.reset(task)
-
 
 @app.get("/health")
 def health():
@@ -40,16 +44,13 @@ def health():
 
 
 @app.post("/step")
-def step(action: dict = {}):
+async def step(request: Request):
     try:
-        result = env.step(action)
-    except Exception:
-        result = {
-            "observation": {},
-            "reward": 0.0,
-            "done": True,
-            "info": {"error": "step failed"}
-        }
+        action = await request.json()
+    except:
+        action = {}
+
+    result = env.step(action)
 
     return {
         "observation": result.get("observation", {}),
@@ -57,7 +58,6 @@ def step(action: dict = {}):
         "done": result.get("done", False),
         "info": result.get("info", {})
     }
-
 
 
 @app.get("/state")
