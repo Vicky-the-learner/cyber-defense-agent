@@ -52,7 +52,15 @@ def grade_task(level):
 
         total_score += max(0.0, score)
 
-    return round(total_score / len(tasks), 2)
+    final_score = total_score / len(tasks)
+
+
+    if final_score <= 0.0:
+        final_score = 0.1
+    elif final_score >= 1.0:
+        final_score = 0.99
+
+    return round(final_score, 2)
 
 
 # 🔥 OPTIONAL (FOR BASELINE USE)
