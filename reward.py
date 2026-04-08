@@ -1,13 +1,6 @@
-#reward.py
-
+# reward.py
 def calculate_reward(analysis, response, attack):
-    """
-    analysis: output from detector
-    response: output from responder
-    attack: original attack object (from attacker.py)
-    """
-
-    reward = 0.0
+    reward = 0.0   # ← THIS WAS MISSING, causing crash every time
     details = []
 
     is_actual_attack = attack["type"].lower() != "normal"
@@ -15,7 +8,6 @@ def calculate_reward(analysis, response, attack):
     blocked = response.get("blocked", False)
     confidence = analysis.get("confidence", 0.5)
     severity = attack.get("severity", 0.5)
-
 
     if is_actual_attack and detected_attack:
         reward += 0.3
@@ -30,7 +22,6 @@ def calculate_reward(analysis, response, attack):
         reward += 0.1
         details.append("✔ Correctly ignored normal input")
 
-   
     if detected_attack and blocked:
         reward += 0.4
         details.append("✔ Attack blocked")
@@ -45,19 +36,13 @@ def calculate_reward(analysis, response, attack):
         reward += 0.1
         details.append("✔ High confidence")
 
-
     if severity > 0.8 and blocked:
         reward += 0.1
         details.append("✔ Handled critical attack")
-
 
     if is_actual_attack and not blocked:
         reward -= 0.2
         details.append("❌ Attack not mitigated")
 
     reward = max(0.0, min(1.0, reward))
-
-    return {
-        "reward": round(reward, 2),
-        "details": details
-    }
+    return {"reward": round(reward, 2), "details": details}
