@@ -23,7 +23,7 @@ def grade_task(level):
         analysis = result["info"]["analysis"]
         response = result["info"]["response"]
 
-        detected_attack = analysis.get("attack", "Normal")
+        detected_attack = analysis.get("attack_type", "Normal")
         expected_attack = task["expected_attack"]
 
         blocked = response.get("blocked", False)
@@ -55,10 +55,7 @@ def grade_task(level):
     final_score = total_score / len(tasks)
 
 
-    if final_score <= 0.0:
-        final_score = 0.1
-    elif final_score >= 1.0:
-        final_score = 0.99
+    final_score = max(0.1, min(0.99, final_score))
 
     return round(final_score, 2)
 
