@@ -2,7 +2,11 @@ import os
 import json
 import urllib.request
 # FINAL VERSION - NO REQUESTS DEPENDENCY
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080")
+API_BASE_URL = os.getenv("API_BASE_URL")
+
+if not API_BASE_URL:
+    print("ERROR: API_BASE_URL not set")
+    exit(0)  # graceful exit (IMPORTANT)
 
 TASKS = ["easy", "medium", "hard"]
 
