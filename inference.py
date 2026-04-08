@@ -1,5 +1,5 @@
 import os
-import requests
+import urllib.request
 import json
 
 API_BASE_URL = os.getenv(
