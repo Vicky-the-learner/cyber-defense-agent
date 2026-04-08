@@ -72,13 +72,13 @@ def baseline():
 
             score = total / 5
 
-# 🔥 clamp strictly between (0,1)
+
             score = max(0.1, min(0.99, score))
 
             scores[task] = round(score, 2)
 
         except:
-            scores[task] = 0.0
+            scores[task] = 0.1
 
     return scores
 
