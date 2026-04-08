@@ -1,17 +1,14 @@
 import os
-import urllib.request
 import json
+import urllib.request
 
 API_BASE_URL = os.getenv(
     "API_BASE_URL",
     "https://kiko555-cyber-defense-agent.hf.space"
 )
 
-if not API_BASE_URL:
-    print("ERROR: API_BASE_URL not set")
-    exit(1)
-
 TASKS = ["easy", "medium", "hard"]
+
 
 def safe_post(url, data=None):
     try:
@@ -21,36 +18,36 @@ def safe_post(url, data=None):
             headers={"Content-Type": "application/json"},
             method="POST"
         )
+
         with urllib.request.urlopen(req, timeout=30) as response:
             return json.loads(response.read().decode())
+
     except Exception as e:
-        print(f"  [safe_post error] {url} -> {e}")
+        print(f"[ERROR] {url} -> {e}", flush=True)
         return {"reward": 0.0, "done": True}
 
-def choose_action(observation):
-    """Read the attack type and pick the right defense action."""
-    if not observation:
-        return "BLOCK_IP"
 
+def choose_action(observation):
     obs_str = str(observation).lower()
 
-    # SQL Injection and XSS → sanitize the input
+    # SQL Injection / XSS
     if any(k in obs_str for k in ["sql", "select", "insert", "xss", "<script>", "javascript"]):
         return "SANITIZE_INPUT"
 
-    # Brute force, port scan, path traversal → block the IP
-    if any(k in obs_str for k in ["brute", "force", "scan", "traversal", "../", "flood"]):
+    # Path traversal / brute / scan
+    if any(k in obs_str for k in ["../", "traversal", "scan", "flood"]):
         return "BLOCK_IP"
 
-    # Command injection → sanitize
-    if any(k in obs_str for k in ["cmd", "command", "exec", "bash", "shell", ";"]):
+    # Command injection
+    if any(k in obs_str for k in ["cmd", "exec", "bash", ";", "&&"]):
         return "SANITIZE_INPUT"
 
-    # Default: block
     return "BLOCK_IP"
 
+
 def run_episode(task):
-    print(f"\nResetting for task={task}")
+    print(f"[START] task={task}", flush=True)
+
     reset_result = safe_post(f"{API_BASE_URL}/reset", {"task": task})
     observation = reset_result.get("observation", "")
 
@@ -59,35 +56,48 @@ def run_episode(task):
 
     while steps < 50:
         action = choose_action(observation)
+
         result = safe_post(f"{API_BASE_URL}/step", {"action": action})
 
         reward = result.get("reward", 0.0)
         done = result.get("done", False)
-        observation = result.get("observation", "")  # read next attack
+        observation = result.get("observation", "")
 
-        print(f"  STEP task={task} step={steps} action={action} reward={reward}")
+        print(
+            f"[STEP] step={steps} action={action} reward={reward}",
+            flush=True
+        )
+
         total_reward += reward
         steps += 1
 
         if done:
             break
 
-    return round(total_reward / max(steps, 1), 2)
+    score = round(total_reward / max(steps, 1), 2)
+
+    print(
+        f"[END] task={task} score={score} steps={steps}",
+        flush=True
+    )
+
+    return score
+
 
 def main():
     scores = {}
+
     for task in TASKS:
-        print(f"\nSTART task={task}")
         try:
             score = run_episode(task)
         except Exception as e:
-            print(f"  Exception: {e}")
+            print(f"[ERROR] task={task} -> {e}", flush=True)
             score = 0.0
-        scores[task] = score
-        print(f"END task={task} score={score}")
 
-    print("\nFINAL SCORES")
-    print(scores)
+        scores[task] = score
+
+    print("[FINAL]", scores, flush=True)
+
 
 if __name__ == "__main__":
     main()
