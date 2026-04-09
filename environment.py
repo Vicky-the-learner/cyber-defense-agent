@@ -139,7 +139,7 @@ class CyberDefenseEnv:
             "reward": reward,
             "done": self.done,
             "info": {
-                "analysis": observation.dict(),
+                "analysis": analysis,
                 "response": response,
                 "reward_details": reward_data["details"],
                 "step": self.step_count,
