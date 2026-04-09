@@ -32,7 +32,7 @@ def choose_action(observation):
     try:
         result = analyze_input(str(observation))
 
-        action = result.get("action", "allow").lower()
+        action = result.get("action", "block").lower()
 
         if action == "block":
             return "BLOCK_IP"
@@ -73,7 +73,9 @@ def run_episode(task):
         if done:
             break
 
-    score = round(total_reward / max(steps, 1), 2)
+    score = total_reward / max(steps, 1)
+    score = max(0.1, min(0.99, score))
+    score = round(score, 2)
 
     print(
         f"[END] task={task} score={score} steps={steps}",

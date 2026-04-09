@@ -13,18 +13,18 @@ def analyze_input(user_input):
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a cybersecurity AI."},
-                {"role": "user", "content": f"Analyze: {user_input}"}
+                {"role": "user", "content": f"Analyze this attack and classify it (SQL Injection, XSS, Normal): {user_input}"}
             ]
         )
 
         content = response.choices[0].message.content.lower()
 
         if "sql" in content:
-            return {"attack": "SQL Injection", "action": "block"}
+            return {"attack_type": "SQL Injection", "action": "block"}
         elif "xss" in content:
-            return {"attack": "XSS", "action": "sanitize"}
+            return {"attack_type": "XSS", "action": "sanitize"}
         else:
-            return {"attack": "unknown", "action": "allow"}
+            return {"attack_type": "Normal", "action": "allow"}
 
     except Exception:
-        return {"attack": "unknown", "action": "allow"}
+        return {"attack_type": "Normal", "action": "allow"}

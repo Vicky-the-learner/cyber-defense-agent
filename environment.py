@@ -52,11 +52,11 @@ class CyberDefenseEnv:
             llm_result = analyze_input(str(attack))
 
             analysis = {
-    "attack_type": llm_result.get("attack", "Unknown"),
-    "confidence": 0.8,
-    "explanation": "LLM-based detection",
-    "is_attack": llm_result.get("attack", "unknown") != "unknown"
-}
+                "attack_type": llm_result.get("attack_type", "Normal"),
+                "confidence": 0.8,
+                "explanation": "LLM-based detection",
+                "is_attack": llm_result.get("attack_type", "Normal") != "Normal"
+            }
         except Exception:
             analysis = detect_attack(attack)
 
