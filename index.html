@@ -12,14 +12,14 @@
             overflow-x: hidden;
         }
 
-        /* Moving grid background */
+        /* Grid background */
         body::before {
             content: "";
             position: fixed;
             width: 200%;
             height: 200%;
-            background-image: linear-gradient(#0f0 1px, transparent 1px),
-                              linear-gradient(90deg, #0f0 1px, transparent 1px);
+            background-image: linear-gradient(#00ff9f 1px, transparent 1px),
+                              linear-gradient(90deg, #00ff9f 1px, transparent 1px);
             background-size: 40px 40px;
             opacity: 0.05;
             animation: moveGrid 20s linear infinite;
@@ -65,7 +65,7 @@
             background: black;
             padding: 10px;
             margin-top: 10px;
-            height: 120px;
+            height: 140px;
             overflow-y: auto;
             border: 1px solid #00ff9f;
         }
@@ -79,17 +79,9 @@
             to {opacity: 1;}
         }
 
-        .status {
-            color: #22c55e;
-        }
-
-        .warning {
-            color: #facc15;
-        }
-
-        .danger {
-            color: #ef4444;
-        }
+        .status { color: #22c55e; }
+        .warning { color: #facc15; }
+        .danger { color: #ef4444; }
 
     </style>
 </head>
@@ -132,34 +124,52 @@ function addLine(container, text, cls="") {
     container.scrollTop = container.scrollHeight;
 }
 
+// ✅ FIXED API CALLS
+const BASE_URL = window.location.origin;
+
+// TASKS
 async function getTasks() {
     const box = document.getElementById("tasks");
     box.innerHTML = "";
 
     addLine(box, "Fetching task configurations...");
-    const res = await fetch('/tasks');
-    const data = await res.json();
 
-    data.tasks.forEach((t, i) => {
-        setTimeout(() => {
-            addLine(box, "Loaded: " + t.toUpperCase(), "status");
-        }, i * 400);
-    });
+    try {
+        const res = await fetch(BASE_URL + '/tasks');
+        const data = await res.json();
+
+        data.tasks.forEach((t, i) => {
+            setTimeout(() => {
+                addLine(box, "Loaded: " + t.toUpperCase(), "status");
+            }, i * 400);
+        });
+
+    } catch (err) {
+        addLine(box, "Error loading tasks", "danger");
+    }
 }
 
+// BASELINE
 async function getBaseline() {
     const box = document.getElementById("baseline");
     box.innerHTML = "";
 
     addLine(box, "Running baseline AI...");
-    const res = await fetch('/baseline');
-    const data = await res.json();
 
-    setTimeout(() => addLine(box, "Easy: " + data.easy, "warning"), 500);
-    setTimeout(() => addLine(box, "Medium: " + data.medium, "warning"), 900);
-    setTimeout(() => addLine(box, "Hard: " + data.hard, "danger"), 1300);
+    try {
+        const res = await fetch(BASE_URL + '/baseline');
+        const data = await res.json();
+
+        setTimeout(() => addLine(box, "Easy: " + data.easy, "warning"), 500);
+        setTimeout(() => addLine(box, "Medium: " + data.medium, "warning"), 900);
+        setTimeout(() => addLine(box, "Hard: " + data.hard, "danger"), 1300);
+
+    } catch (err) {
+        addLine(box, "Error fetching baseline", "danger");
+    }
 }
 
+// SIMULATION
 function simulate() {
     const box = document.getElementById("sim");
     box.innerHTML = "";
