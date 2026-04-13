@@ -2,50 +2,70 @@
 <html>
 <head>
     <title>Cyber Defense Agent</title>
+
     <style>
         body {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #0b1220;
-            color: #e2e8f0;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(270deg, #0b1220, #0f172a, #020617);
+            background-size: 600% 600%;
+            animation: gradientMove 12s ease infinite;
+            color: #e5e7eb;
+        }
+
+        @keyframes gradientMove {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
         }
 
         .container {
             max-width: 900px;
             margin: auto;
-            padding: 40px 20px;
+            padding: 50px 20px;
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            color: #94a3b8;
+            color: #9ca3af;
             margin-bottom: 40px;
         }
 
         .card {
-            background: #111827;
-            border-radius: 16px;
-            padding: 20px;
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 22px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
         }
 
-        .card h2 {
-            margin-bottom: 15px;
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 500;
         }
 
         button {
             background: #2563eb;
             border: none;
-            padding: 10px 16px;
+            padding: 10px 18px;
             color: white;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 0.9rem;
+            transition: 0.25s;
         }
 
         button:hover {
@@ -54,17 +74,22 @@
 
         pre {
             background: #020617;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
-            overflow-x: auto;
-            margin-top: 10px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #64748b;
+        .log-line {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
         }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
     </style>
 </head>
 
@@ -72,29 +97,25 @@
 
 <div class="container">
 
-    <h1>🛡️ Cyber Defense Agent</h1>
-    <p class="subtitle">AI Training Environment for Cyber Security</p>
+    <h1>Cyber Defense Agent</h1>
+    <p class="subtitle">AI-powered cyber defense training environment</p>
 
     <div class="card">
-        <h2>📊 Available Tasks</h2>
+        <h2>Available Tasks</h2>
         <button onclick="getTasks()">Load Tasks</button>
         <pre id="tasks"></pre>
     </div>
 
     <div class="card">
-        <h2>⚡ Baseline Performance</h2>
-        <button onclick="getBaseline()">Show Baseline</button>
+        <h2>Baseline Performance</h2>
+        <button onclick="getBaseline()">View Baseline</button>
         <pre id="baseline"></pre>
     </div>
 
     <div class="card">
-        <h2>🚨 Attack Simulation</h2>
+        <h2>Attack Simulation</h2>
         <button onclick="simulate()">Run Simulation</button>
         <pre id="result"></pre>
-    </div>
-
-    <div class="footer">
-        Built for OpenEnv Hackathon 🚀
     </div>
 
 </div>
@@ -113,8 +134,24 @@ async function getBaseline() {
 }
 
 async function simulate() {
-    document.getElementById('result').innerText =
-        "🔍 Detecting attack...\n🛡️ Responding...\n🎯 Reward assigned: +1";
+    const resultBox = document.getElementById('result');
+    resultBox.innerHTML = "";
+
+    const steps = [
+        "Detecting potential threat...",
+        "Analyzing request behavior...",
+        "Applying defense response...",
+        "Reward assigned: +1"
+    ];
+
+    steps.forEach((step, i) => {
+        setTimeout(() => {
+            const line = document.createElement("div");
+            line.className = "log-line";
+            line.innerText = step;
+            resultBox.appendChild(line);
+        }, i * 600);
+    });
 }
 </script>
 
