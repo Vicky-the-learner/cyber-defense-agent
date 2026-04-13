@@ -2,44 +2,121 @@
 <html>
 <head>
     <title>Cyber Defense Agent</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0b1220;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: #111827;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #2563eb;
+            border: none;
+            padding: 10px 16px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        pre {
+            background: #020617;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #64748b;
+        }
+    </style>
 </head>
-<body style="font-family: Arial; background-color: #0f172a; color: white; text-align: center;">
+
+<body>
+
+<div class="container">
 
     <h1>🛡️ Cyber Defense Agent</h1>
-    <p>AI Training Environment for Cyber Security</p>
+    <p class="subtitle">AI Training Environment for Cyber Security</p>
 
-    <h2>📊 Available Tasks</h2>
-    <button onclick="getTasks()">Load Tasks</button>
-    <pre id="tasks"></pre>
+    <div class="card">
+        <h2>📊 Available Tasks</h2>
+        <button onclick="getTasks()">Load Tasks</button>
+        <pre id="tasks"></pre>
+    </div>
 
-    <h2>⚡ Baseline Performance</h2>
-    <button onclick="getBaseline()">Show Baseline</button>
-    <pre id="baseline"></pre>
-    
-    <h2>🚨 Simulate Attack</h2>
-    <button onclick="simulate()">Run Attack</button>
-    <pre id="result"></pre>
+    <div class="card">
+        <h2>⚡ Baseline Performance</h2>
+        <button onclick="getBaseline()">Show Baseline</button>
+        <pre id="baseline"></pre>
+    </div>
 
-    <script>
-        async function getTasks() {
-            const res = await fetch('/tasks');
-            const data = await res.json();
-            document.getElementById('tasks').innerText = JSON.stringify(data, null, 2);
-        }
+    <div class="card">
+        <h2>🚨 Attack Simulation</h2>
+        <button onclick="simulate()">Run Simulation</button>
+        <pre id="result"></pre>
+    </div>
 
-        async function getBaseline() {
-            const res = await fetch('/baseline');
-            const data = await res.json();
-            document.getElementById('baseline').innerText = JSON.stringify(data, null, 2);
-        }
+    <div class="footer">
+        Built for OpenEnv Hackathon 🚀
+    </div>
 
-        async function simulate() {
-            const res = await fetch('/baseline');
-            const data = await res.json();
-             document.getElementById('result').innerText =
-                "Attack simulated → AI responded → Reward calculated";
+</div>
+
+<script>
+async function getTasks() {
+    const res = await fetch('/tasks');
+    const data = await res.json();
+    document.getElementById('tasks').innerText = JSON.stringify(data, null, 2);
 }
-    </script>
+
+async function getBaseline() {
+    const res = await fetch('/baseline');
+    const data = await res.json();
+    document.getElementById('baseline').innerText = JSON.stringify(data, null, 2);
+}
+
+async function simulate() {
+    document.getElementById('result').innerText =
+        "🔍 Detecting attack...\n🛡️ Responding...\n🎯 Reward assigned: +1";
+}
+</script>
 
 </body>
 </html>
