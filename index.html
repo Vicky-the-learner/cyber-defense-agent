@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Defense Agent</title>
+</head>
+<body style="font-family: Arial; background-color: #0f172a; color: white; text-align: center;">
+
+    <h1>🛡️ Cyber Defense Agent</h1>
+    <p>AI Training Environment for Cyber Security</p>
+
+    <h2>📊 Available Tasks</h2>
+    <button onclick="getTasks()">Load Tasks</button>
+    <pre id="tasks"></pre>
+
+    <h2>⚡ Baseline Performance</h2>
+    <button onclick="getBaseline()">Show Baseline</button>
+    <pre id="baseline"></pre>
+    
+    <h2>🚨 Simulate Attack</h2>
+    <button onclick="simulate()">Run Attack</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function getTasks() {
+            const res = await fetch('/tasks');
+            const data = await res.json();
+            document.getElementById('tasks').innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function getBaseline() {
+            const res = await fetch('/baseline');
+            const data = await res.json();
+            document.getElementById('baseline').innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function simulate() {
+            const res = await fetch('/baseline');
+            const data = await res.json();
+             document.getElementById('result').innerText =
+                "Attack simulated → AI responded → Reward calculated";
+}
+    </script>
+
+</body>
+</html>

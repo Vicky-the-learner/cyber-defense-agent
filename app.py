@@ -4,15 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from environment import CyberDefenseEnv
 from grader import grade_task
 
+from fastapi.responses import HTMLResponse
+
 app = FastAPI()
 
 env = CyberDefenseEnv()
 
 
-@app.get("/")
-def home():
-    return {"message": "Cyber Defense Agent running"}
 
+@app.get("/", response_class=HTMLResponse)
+def home():
+    with open("index.html") as f:
+        return f.read()
 
 # ✅ RESET (OpenEnv compliant)
 @app.post("/reset")
