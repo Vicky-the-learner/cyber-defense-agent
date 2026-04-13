@@ -6,88 +6,89 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(270deg, #0b1220, #0f172a, #020617);
-            background-size: 600% 600%;
-            animation: gradientMove 12s ease infinite;
-            color: #e5e7eb;
+            font-family: 'Courier New', monospace;
+            background: black;
+            color: #00ff9f;
+            overflow-x: hidden;
         }
 
-        @keyframes gradientMove {
-            0% {background-position: 0% 50%;}
-            50% {background-position: 100% 50%;}
-            100% {background-position: 0% 50%;}
+        /* Moving grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background-image: linear-gradient(#0f0 1px, transparent 1px),
+                              linear-gradient(90deg, #0f0 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.05;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from { transform: translate(0,0); }
+            to { transform: translate(-40px,-40px); }
         }
 
         .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 50px 20px;
+            padding: 30px;
         }
 
         h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid #00ff9f;
+            padding-bottom: 10px;
         }
 
-        .subtitle {
-            color: #9ca3af;
-            margin-bottom: 40px;
-        }
-
-        .card {
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(10px);
-            border-radius: 14px;
-            padding: 22px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        }
-
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-            font-weight: 500;
+        .panel {
+            border: 1px solid #00ff9f;
+            padding: 15px;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.7);
         }
 
         button {
-            background: #2563eb;
-            border: none;
-            padding: 10px 18px;
-            color: white;
-            border-radius: 6px;
+            background: black;
+            border: 1px solid #00ff9f;
+            color: #00ff9f;
+            padding: 8px 14px;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.25s;
+            margin-top: 10px;
         }
 
         button:hover {
-            background: #1d4ed8;
+            background: #00ff9f;
+            color: black;
         }
 
-        pre {
-            background: #020617;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255,255,255,0.05);
+        .terminal {
+            background: black;
+            padding: 10px;
+            margin-top: 10px;
+            height: 120px;
+            overflow-y: auto;
+            border: 1px solid #00ff9f;
         }
 
-        .log-line {
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
+        .line {
+            animation: fade 0.3s ease-in;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        @keyframes fade {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        .status {
+            color: #22c55e;
+        }
+
+        .warning {
+            color: #facc15;
+        }
+
+        .danger {
+            color: #ef4444;
         }
 
     </style>
@@ -97,60 +98,82 @@
 
 <div class="container">
 
-    <h1>Cyber Defense Agent</h1>
-    <p class="subtitle">AI-powered cyber defense training environment</p>
+    <h1>Cyber Defense Command Center</h1>
 
-    <div class="card">
-        <h2>Available Tasks</h2>
-        <button onclick="getTasks()">Load Tasks</button>
-        <pre id="tasks"></pre>
+    <!-- TASKS -->
+    <div class="panel">
+        <h3>Task Levels</h3>
+        <button onclick="getTasks()">Fetch Tasks</button>
+        <div class="terminal" id="tasks"></div>
     </div>
 
-    <div class="card">
-        <h2>Baseline Performance</h2>
-        <button onclick="getBaseline()">View Baseline</button>
-        <pre id="baseline"></pre>
+    <!-- BASELINE -->
+    <div class="panel">
+        <h3>Baseline AI Performance</h3>
+        <button onclick="getBaseline()">Run Baseline</button>
+        <div class="terminal" id="baseline"></div>
     </div>
 
-    <div class="card">
-        <h2>Attack Simulation</h2>
-        <button onclick="simulate()">Run Simulation</button>
-        <pre id="result"></pre>
+    <!-- ATTACK SIM -->
+    <div class="panel">
+        <h3>Live Attack Simulation</h3>
+        <button onclick="simulate()">Execute</button>
+        <div class="terminal" id="sim"></div>
     </div>
 
 </div>
 
 <script>
+function addLine(container, text, cls="") {
+    const div = document.createElement("div");
+    div.className = "line " + cls;
+    div.innerText = "> " + text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
 async function getTasks() {
+    const box = document.getElementById("tasks");
+    box.innerHTML = "";
+
+    addLine(box, "Fetching task configurations...");
     const res = await fetch('/tasks');
     const data = await res.json();
-    document.getElementById('tasks').innerText = JSON.stringify(data, null, 2);
+
+    data.tasks.forEach((t, i) => {
+        setTimeout(() => {
+            addLine(box, "Loaded: " + t.toUpperCase(), "status");
+        }, i * 400);
+    });
 }
 
 async function getBaseline() {
+    const box = document.getElementById("baseline");
+    box.innerHTML = "";
+
+    addLine(box, "Running baseline AI...");
     const res = await fetch('/baseline');
     const data = await res.json();
-    document.getElementById('baseline').innerText = JSON.stringify(data, null, 2);
+
+    setTimeout(() => addLine(box, "Easy: " + data.easy, "warning"), 500);
+    setTimeout(() => addLine(box, "Medium: " + data.medium, "warning"), 900);
+    setTimeout(() => addLine(box, "Hard: " + data.hard, "danger"), 1300);
 }
 
-async function simulate() {
-    const resultBox = document.getElementById('result');
-    resultBox.innerHTML = "";
+function simulate() {
+    const box = document.getElementById("sim");
+    box.innerHTML = "";
 
     const steps = [
-        "Detecting potential threat...",
-        "Analyzing request behavior...",
-        "Applying defense response...",
-        "Reward assigned: +1"
+        ["Injecting malicious payload...", "danger"],
+        ["Analyzing traffic pattern...", "warning"],
+        ["Threat detected", "status"],
+        ["Blocking request...", "status"],
+        ["Reward assigned: +1", "status"]
     ];
 
-    steps.forEach((step, i) => {
-        setTimeout(() => {
-            const line = document.createElement("div");
-            line.className = "log-line";
-            line.innerText = step;
-            resultBox.appendChild(line);
-        }, i * 600);
+    steps.forEach((s, i) => {
+        setTimeout(() => addLine(box, s[0], s[1]), i * 700);
     });
 }
 </script>
